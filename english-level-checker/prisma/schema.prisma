@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ユーザー情報
+model User {
+  id        Int      @id @default(autoincrement()) // 自動インクリメント
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  otps      Otp[]
+  tests     Test[]
+}
+
+// ワンタイムパスワード (OTP)
+model Otp {
+  id        Int      @id @default(autoincrement()) // 自動インクリメント
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// テスト履歴
+model Test {
+  id          Int      @id @default(autoincrement()) // 自動インクリメント
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  cefrLevel   String   // CEFRレベル (例: A1, B2)
+  totalScore  Float    // 総合スコア
+  quality     String   // 品質 (例: standard, advanced)
+  wordCount   Int      // 単語数
+  summary     String?   // 発話の要約
+  createdAt   DateTime @default(now())
+  turns       Turn[]   // 会話のターン
+  scores      Score[]  // 各項目のスコア
+  feedback    Feedback[] // フィードバックをオプショナルに変更
+  vocabularyCards VocabularyCard[] // 語彙カード
+  EvaluationDetail EvaluationDetail[] // EvaluationDetail モデルとのリレーションを追加
+}
+
+// 会話のターン（発話履歴）
+model Turn {
+  id                Int      @id @default(autoincrement()) // 自動インクリメント
+  test              Test     @relation(fields: [testId], references: [id])
+  testId            Int
+  turnNumber        Int      // ターン番号
+  speaker           String   // 'EXAMINER' or 'CANDIDATE'
+  transcript        String   // 発話内容
+  timestamp         DateTime // 発話のタイムスタンプ
+  paraphrases       Paraphrase[] // Paraphrase モデルとのリレーションを追加
+}
+
+// 各項目のスコア
+model Score {
+  id          Int      @id @default(autoincrement()) // 自動インクリメント
+  test        Test     @relation(fields: [testId], references: [id])
+  testId      Int
+  category    String   // 評価項目 (例: 流暢さ, やりとり力, 文法, 語彙, 発音)
+  score       Float    // スコア
+}
+
+// フィードバック
+model Feedback {
+  id          Int      @id @default(autoincrement()) // 自動インクリメント
+  test        Test     @relation(fields: [testId], references: [id])
+  testId      Int
+  problematicPoints String?   // 問題点
+  strengths   String?   // 良かった点
+  nextSteps   String?   // 次の一歩（具体的な改善提案）
+}
+
+// 語彙カード
+model VocabularyCard {
+  id          Int      @id @default(autoincrement()) // 自動インクリメント
+  test       Test     @relation(fields: [testId], references: [id])
+  testId      Int
+  word        String   // 単語
+  cefrLevel   String   // CEFRレベル (例: A1, B2)
+  meaning     String   // 単語の意味
+  usage       String   // 単語の使い方
+}
+
+// 言い換え提案
+model Paraphrase {
+  id          Int      @id @default(autoincrement()) // 自動インクリメント
+  turn        Turn     @relation(fields: [turnId], references: [id])
+  turnId      Int
+  original    String   // 元の発話
+  suggestion  String   // 提案された発話
+}
+// 評価の詳細情報
+model EvaluationDetail {
+  id          Int      @id @default(autoincrement()) // 自動インクリメント
+  test        Test     @relation(fields: [testId], references: [id])
+  testId      Int      // Test テーブルとのリレーション
+  category    String   // 評価項目 (例: 流暢さ、やりとり力、文法、語彙)
+  turnNumber  Int      // 根拠となった発話の行番号
+  transcript  String   // 発話内容
+  reason      String   // 評価の理由
+}
+generator erd {
+  provider = "prisma-erd-generator"
+  theme = "forest"
+  output = "ERD.md"
+  includeRelationFromFields = true
+}
