@@ -45,6 +45,7 @@ model Test {
   feedback    Feedback[] // フィードバックをオプショナルに変更
   vocabularyCards VocabularyCard[] // 語彙カード
   EvaluationDetail EvaluationDetail[] // EvaluationDetail モデルとのリレーションを追加
+  paraphrases Paraphrase[] // 言い換え提案を Test に直接関連付け
 }
 
 // 会話のターン（発話履歴）
@@ -56,7 +57,6 @@ model Turn {
   speaker           String   // 'EXAMINER' or 'CANDIDATE'
   transcript        String   // 発話内容
   timestamp         DateTime // 発話のタイムスタンプ
-  paraphrases       Paraphrase[] // Paraphrase モデルとのリレーションを追加
 }
 
 // 各項目のスコア
@@ -91,11 +91,11 @@ model VocabularyCard {
 
 // 言い換え提案
 model Paraphrase {
-  id          Int      @id @default(autoincrement()) // 自動インクリメント
-  turn        Turn     @relation(fields: [turnId], references: [id])
-  turnId      Int
-  original    String   // 元の発話
-  suggestion  String   // 提案された発話
+  id          Int      @id @default(autoincrement())
+  test        Test     @relation(fields: [testId], references: [id])
+  testId      Int
+  original    String
+  suggestion  String
 }
 // 評価の詳細情報
 model EvaluationDetail {

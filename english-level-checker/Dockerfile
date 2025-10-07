@@ -7,7 +7,11 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# プロジェクトのファイルをコピー
+# Prismaスキーマをコピーしてクライアントを生成
+COPY prisma ./prisma/
+RUN npx prisma generate
+
+# 残りのプロジェクトファイルをコピー
 COPY . .
 
 # Next.jsが使用するポートを公開

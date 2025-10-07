@@ -70,7 +70,7 @@ erDiagram
 
   "Paraphrase" {
     Int id "🗝️"
-    Int turnId 
+    Int testId 
     String original 
     String suggestion 
     }
@@ -94,11 +94,11 @@ erDiagram
     "Test" o{--}o "Feedback" : ""
     "Test" o{--}o "VocabularyCard" : ""
     "Test" o{--}o "EvaluationDetail" : ""
+    "Test" o{--}o "Paraphrase" : ""
     "Turn" o|--|| "Test" : "test"
-    "Turn" o{--}o "Paraphrase" : ""
     "Score" o|--|| "Test" : "test"
     "Feedback" o|--|| "Test" : "test"
     "VocabularyCard" o|--|| "Test" : "test"
-    "Paraphrase" o|--|| "Turn" : "turn"
+    "Paraphrase" o|--|| "Test" : "test"
     "EvaluationDetail" o|--|| "Test" : "test"
 ```

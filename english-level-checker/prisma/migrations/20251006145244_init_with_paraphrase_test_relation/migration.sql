@@ -1,15 +1,13 @@
-/*
-  Warnings:
+-- CreateTable
+CREATE TABLE "User" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "name" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
-  - The primary key for the `User` table will be changed. If it partially fails, the table could be left without primary key constraint.
-  - The `id` column on the `User` table would be dropped and recreated. This will lead to data loss if there is data in the column.
-
-*/
--- AlterTable
-ALTER TABLE "User" DROP CONSTRAINT "User_pkey",
-DROP COLUMN "id",
-ADD COLUMN     "id" SERIAL NOT NULL,
-ADD CONSTRAINT "User_pkey" PRIMARY KEY ("id");
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "Otp" (
@@ -84,7 +82,7 @@ CREATE TABLE "VocabularyCard" (
 -- CreateTable
 CREATE TABLE "Paraphrase" (
     "id" SERIAL NOT NULL,
-    "turnId" INTEGER NOT NULL,
+    "testId" INTEGER NOT NULL,
     "original" TEXT NOT NULL,
     "suggestion" TEXT NOT NULL,
 
@@ -102,6 +100,9 @@ CREATE TABLE "EvaluationDetail" (
 
     CONSTRAINT "EvaluationDetail_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Otp_userId_key" ON "Otp"("userId");
@@ -125,7 +126,7 @@ ALTER TABLE "Feedback" ADD CONSTRAINT "Feedback_testId_fkey" FOREIGN KEY ("testI
 ALTER TABLE "VocabularyCard" ADD CONSTRAINT "VocabularyCard_testId_fkey" FOREIGN KEY ("testId") REFERENCES "Test"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Paraphrase" ADD CONSTRAINT "Paraphrase_turnId_fkey" FOREIGN KEY ("turnId") REFERENCES "Turn"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Paraphrase" ADD CONSTRAINT "Paraphrase_testId_fkey" FOREIGN KEY ("testId") REFERENCES "Test"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "EvaluationDetail" ADD CONSTRAINT "EvaluationDetail_testId_fkey" FOREIGN KEY ("testId") REFERENCES "Test"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

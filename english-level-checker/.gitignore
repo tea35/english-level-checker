@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local env files
+english-level-checker-474210-cb35bb364efe.json
+
 # vercel
 .vercel
 
